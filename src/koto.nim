@@ -3,13 +3,17 @@ import portaudio as pa
 import kotopkg.main
 
 
+type TStereo = tuple[left, right: float32]
+
 # fundamental proc and it should be replaced
 proc procBuffer(inBuf, outBuf: pointer,
                 framesPerBuf: culong,
                 timeInfo: ptr pa.TStreamCallbackTimeInfo,
                 stateusFlags: pa.TStreamCallbackFlags,
                 userData: pointer): cint {.cdecl.} =
-  return 0
+  var outBuf = cast[ptr array[int, TStereo]](outBuf)
+  for i in 0..<(1024):
+    outBuf[i] = (0'f32, 0'f32)
 
 
 when isMainModule:
