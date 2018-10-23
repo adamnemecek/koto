@@ -1,19 +1,17 @@
 import math as m
+import random as r
 
 import portaudio as pa
 
+import kotopkg.aconf as conf
 import kotopkg.main
-import kotopkg.ug
+import kotopkg.ug as ug
 
-type TestSin = ref object of UnitGenerator
-  angle: float32
 
-proc calc(ug: UnitGenerator): float32 =
-  let v = m.sin(TestSin(ug).angle)
-  TestSin(ug).angle += 0.08
-  return v
+let aconf = conf.AudioConf(sampleRate: 44100)
 
-let testsin = TestSin(angle: 0, calc: calc)
+let testtone = ug.TestTone(aconf: aconf, angle: 0.0)
+
 
 type TStereo = tuple[left, right: float32]
 
@@ -25,7 +23,7 @@ proc procBuffer(inBuf, outBuf: pointer,
                 userData: pointer): cint {.cdecl.} =
   var outBuf = cast[ptr array[int, TStereo]](outBuf)
   for i in 0..<(1024):
-    let v = testsin.calc(testsin)
+    let v = ug.gen(testtone)
     outBuf[i] = (v, v)
 
 

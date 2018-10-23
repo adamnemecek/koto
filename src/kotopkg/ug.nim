@@ -1,2 +1,22 @@
+import math as m
+
+import aconf
+
+
 type UnitGenerator* = ref object of RootObj
-  calc*: proc(ug: UnitGenerator): float32
+  aconf*: AudioConf
+  gain*: float32
+  source*: UnitGenerator
+
+proc gen*(ug: UnitGenerator): float32 =
+  let v = 0.0
+  return v
+
+
+type TestTone* = ref object of UnitGenerator
+  angle*: float32
+
+proc gen*(ug: TestTone): float32 =
+  let v = m.sin(ug.angle)
+  ug.angle += 440'f / ug.aconf.sampleRate * (2.0 * m.PI)
+  return v
