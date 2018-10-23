@@ -1,5 +1,4 @@
 import math as m
-import random as r
 
 import portaudio as pa
 
@@ -8,9 +7,10 @@ import kotopkg.main
 import kotopkg.ug as ug
 
 
-let aconf = conf.AudioConf(sampleRate: 44100)
-
-let testtone = ug.TestTone(aconf: aconf, angle: 0.0)
+let
+  aconf = conf.AudioConf(sampleRate: 44100)
+  testtone = ug.TestTone(aconf: aconf, angle: 0.0)
+  wn = ug.WhiteNoise(aconf: aconf)
 
 
 type TStereo = tuple[left, right: float32]
@@ -23,7 +23,7 @@ proc procBuffer(inBuf, outBuf: pointer,
                 userData: pointer): cint {.cdecl.} =
   var outBuf = cast[ptr array[int, TStereo]](outBuf)
   for i in 0..<(1024):
-    let v = ug.gen(testtone)
+    let v = ug.gen(wn)
     outBuf[i] = (v, v)
 
 
