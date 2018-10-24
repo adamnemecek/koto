@@ -8,7 +8,7 @@ import kotopkg.ug as ug
 
 
 let
-  aconf = conf.AudioConf(sampleRate: 44100)
+  aconf = conf.AudioConf(sampleRate: 44100, framesPerBuffer: 1024)
   testtone = ug.TestTone(aconf: aconf, angle: 0.0)
   wn = ug.WhiteNoise(aconf: aconf)
 
@@ -26,12 +26,13 @@ proc procBuffer(inBuf, outBuf: pointer,
     let v = ug.gen(wn)
     outBuf[i] = (v, v)
 
+aconf.procPaBuffer = procBuffer
 
 when isMainModule:
   echo "hi, Koto!"
 
   init()
-  var s = start(procBuffer)
+  var s = start(aconf)
   try:
     while true:
       pa.Sleep(1)
