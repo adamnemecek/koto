@@ -11,8 +11,9 @@ let
   mp = MasterPlayer(
     sampleRate: 44100, framesPerBuffer: 1024,
     tempo: 120.0'f32, tick: 0, time: 0.0'f32, beat: 0.0'f32)
-  testtone = ug.TestTone(mp: mp, angle: 0.0)
-  wn = ug.WhiteNoise(mp: mp)
+  testtone = ug.TestTone(mp: mp, gain: 0.4, angle: 0.0, sources: @[])
+  wnoise = ug.WhiteNoise(mp: mp, gain: 0.3, sources: @[])
+  wn = ug.WhiteNoise(mp: mp, gain: 0.0, sources: @[wnoise, testtone])
 
 type TStereo = tuple[left, right: float32]
 
@@ -24,7 +25,7 @@ proc procBuffer(inBuf, outBuf: pointer,
                 userData: pointer): cint {.cdecl.} =
   var outBuf = cast[ptr array[int, TStereo]](outBuf)
   for i in 0..<(1024):
-    let v = ug.gen(wn)
+    let v = ug.gen(wnoise)
     outBuf[i] = (v, v)
     procMasterPlayer(mp)
 
