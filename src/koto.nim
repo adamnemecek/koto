@@ -2,16 +2,17 @@ import math as m
 
 import portaudio as pa
 
-import kotopkg.aconf as conf
+import kotopkg.player
 import kotopkg.main
 import kotopkg.ug as ug
 
 
 let
-  aconf = conf.AudioConf(sampleRate: 44100, framesPerBuffer: 1024)
-  testtone = ug.TestTone(aconf: aconf, angle: 0.0)
-  wn = ug.WhiteNoise(aconf: aconf)
-
+  mp = MasterPlayer(
+    sampleRate: 44100, framesPerBuffer: 1024,
+    tempo: 120.0'f32, tick: 0, time: 0.0'f32, beat: 0.0'f32)
+  testtone = ug.TestTone(mp: mp, angle: 0.0)
+  wn = ug.WhiteNoise(mp: mp)
 
 type TStereo = tuple[left, right: float32]
 
@@ -25,14 +26,15 @@ proc procBuffer(inBuf, outBuf: pointer,
   for i in 0..<(1024):
     let v = ug.gen(wn)
     outBuf[i] = (v, v)
+    procMasterPlayer(mp)
 
-aconf.procPaBuffer = procBuffer
+mp.procPaBuffer = procBuffer
 
 when isMainModule:
   echo "hi, Koto!"
 
   init()
-  var s = start(aconf)
+  var s = start(mp)
   try:
     while true:
       pa.Sleep(1)

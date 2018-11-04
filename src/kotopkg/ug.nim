@@ -1,11 +1,11 @@
 import math as m
 import random as r
 
-import aconf
+import player
 
 
 type UnitGenerator* = ref object of RootObj
-  aconf*: AudioConf
+  mp*: MasterPlayer
   gain*: float32
   source*: UnitGenerator
 
@@ -19,7 +19,7 @@ type TestTone* = ref object of UnitGenerator
 
 proc gen*(ug: TestTone): float32 =
   let v = m.sin(ug.angle)
-  ug.angle += 440'f / ug.aconf.sampleRate * (2.0 * m.PI)
+  ug.angle += 440'f / ug.mp.sampleRate * (2.0 * m.PI)
   return v
 
 

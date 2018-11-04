@@ -1,6 +1,6 @@
 import portaudio as pa
 
-import aconf
+import player
 
 
 type KeyboardInterruptError* = object of Exception
@@ -18,7 +18,7 @@ proc termPA(stream: PStream): void =
   discard pa.CloseStream(stream)
   discard pa.Terminate()
 
-proc startPA(aconf: AudioConf): PStream =
+proc startPA(mp: MasterPlayer): PStream =
   var stream: PStream
 
   discard pa.OpenDefaultStream(
@@ -26,9 +26,9 @@ proc startPA(aconf: AudioConf): PStream =
     numInputChannels = 0,
     numOutputChannels = 2,
     sampleFormat = pa.TSampleFormat.sfFloat32,
-    sampleRate = cdouble(aconf.sampleRate),
-    framesPerBuffer = culong(aconf.framesPerBuffer),
-    streamCallback = aconf.procPaBuffer,
+    sampleRate = cdouble(mp.sampleRate),
+    framesPerBuffer = culong(mp.framesPerBuffer),
+    streamCallback = mp.procPaBuffer,
     userData = nil)
 
   discard pa.StartStream(stream)
@@ -39,8 +39,8 @@ proc init*(): void =
   echo "----initializing----"
   initPA()
 
-proc start*(aconf: AudioConf): PStream =
-  return startPA(aconf)
+proc start*(mp: MasterPlayer): PStream =
+  return startPA(mp)
 
 proc term*(stream: PStream): void =
   echo "----terminating----"
